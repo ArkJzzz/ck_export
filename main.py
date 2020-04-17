@@ -1,11 +1,24 @@
 #!/usr/bin/python3
 __author__ = 'ArkJzzz (arkjzzz@gmail.com)'
 
-# Import
+
+#####################################################################
+#			TODO
+# Выгрузка данных по категориям в отдельные словари
+# Отдельная функция, которая выводит на печать категорию, независимо
+# от ее типа
+# Телеграм-бот, который принимает на вход файл с экспортом, в ответ 
+# возвращает данные по каждой категории
+# 
+#####################################################################
+
+
+# Imports
 import logging
 from os.path import dirname
 from os.path import abspath
 from os.path import join as joinpath
+
 from terminaltables import AsciiTable
 
 
@@ -37,40 +50,6 @@ def extract_transactions(csv_file):
 		clear_transactions.append(transaction)
 	return clear_transactions
 
-
-# Доходы				Сумма	
-#-----------------------------------------------------
-# Зарплата 10.хх.хххх	23682	ABB Evo
-# Аванс 25.09.2018		20000	SBER
-# Премия 18.xx.xxxx		17665	ABB Evo
-# Проектирование		8000	ABB Evo
-		
-# Доп. заработок		4000	Луначарского 54
-# Доп. заработок		1490	Северодвинск, Буквоед
-# Доп. заработок		5000	Горелово
-
-# Кэшбэк				51,2	кэшбэк АкБарс
-# Кэшбэк				134,95	кэшбэк АкБарс
-#-----------------------------------------------------
-
-
-
-# def print_statistics(resourse, city, language_stat):
-#     title = '{resourse} {city}'.format(resourse=resourse, city=city)
-#     table_content = [('Язык программирования', 'Вакансий Найдено', 'Вакансий обработано', 'Средняя зарплата')]
-
-#     for language, statistic in language_stat.items():
-#         chunk = (
-#             language,
-#             statistic['vacancies_found'], 
-#             statistic['vacancies_processed'],
-#             statistic['average_salary'],
-#         )
-#         table_content.append(chunk)
-
-#     table = AsciiTable(table_content, title)
-#     print(table.table)
-#     print()
 
 def print_profits(transactions):
 	tr_type = 'Перевод'
@@ -170,7 +149,6 @@ def print_expenses(transactions):
 		print(table.table)
 
 
-
 def main():
 	# init
 	logging.basicConfig(
@@ -180,7 +158,8 @@ def main():
 	logger.setLevel(logging.DEBUG)
 
 	# do
-	export_file = joinpath(EXPORT_FILES_DIR, 'CoinKeeper_export (3).csv') 
+	file = 'CoinKeeper_export (9).csv'
+	export_file = joinpath(EXPORT_FILES_DIR, file)
 	transactions = extract_transactions(export_file)
 
 	print_profits(transactions)
