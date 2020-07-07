@@ -4,6 +4,7 @@ __author__ = 'ArkJzzz (arkjzzz@gmail.com)'
 
 import logging
 from os import getenv
+from os import listdir
 
 from dotenv import load_dotenv
 from telegram import InlineKeyboardButton
@@ -29,6 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 
+photos_dir = 'receipts_photos'
 
 
 # KEYBOARD = [
@@ -56,18 +58,22 @@ def start(update, context):
 def photo(update, context):
     user = update.message.from_user
     photo_file = update.message.photo[-1].get_file()
-    photo_file.download('tax_image.jpeg')
-    logger.info('Фото от {}: {}'.format(user.first_name, 'tax_image.jpeg'))
-    qr_data = decode_qr_from_photo('tax_image.jpeg')
-    update.message.reply_text('QR data: {}'.format(qr_data))
-    receipt_data = get_receipt(qr_data)
-    update.message.reply_text(receipt_data)
+    filename = 'tax_image.jpeg'
+    photo_file.download(filename)
+    logger.info('Фото от {}: {}'.format(user.first_name, filename))
+    qr_data = decode_qr_from_photo(filename)
+    if qr_data:
+        update.message.reply_text('QR data: {}'.format(qr_data))
+        receipt_data = get_receipt(qr_data)
+        update.message.reply_text(receipt_data)
+    else:
+        update.message.reply_text('Чек не распознан, '
+                                  'попробуй сделать новое фото')
 
 
 def main():
     load_dotenv()
     telegram_token = getenv('TELEGRAM_TOKEN')
-    logger.debug(telegram_token)
 
     updater = Updater(
         telegram_token, 
