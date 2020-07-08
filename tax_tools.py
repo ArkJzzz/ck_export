@@ -29,13 +29,11 @@ DEVICE_ID = getenv('DEVICE_ID')
 DEVICE_OS = getenv('DEVICE_OS')
 
 
-# Отправляем запрос на проверку существования чека. 
+# 1. Отправляем запрос на проверку существования чека. 
 # Если все хорошо, то получим код ответа сервера 204.
-
-# Отправляем запрос на получение детальной информации по чеку. 
+# 2. Отправляем запрос на получение детальной информации по чеку. 
 # Если все хорошо, то получим код ответа сервера 202.
-
-# Отправляем еще запрос на получение детальной информации по чеку. 
+# 3. Отправляем еще запрос на получение детальной информации по чеку. 
 # Вместе с кодом ответа сервера 200 вы получите json с данными чека.
 
 
@@ -115,7 +113,7 @@ def print_receipt(receipt_data):
     '''.format(
             dateTime=receipt_data['document']['receipt']['dateTime'],
             totalSum=receipt_data['document']['receipt']['totalSum']/100,
-            items=receipt_data['document']['receipt']['items']
+            # items=receipt_data['document']['receipt']['items']
         )
 
     commodity_items = receipt_data['document']['receipt']['items']

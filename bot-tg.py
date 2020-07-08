@@ -7,6 +7,8 @@ from os import getenv
 from os import listdir
 
 from dotenv import load_dotenv
+from telegram import Bot
+from telegram import ChatAction
 from telegram import InlineKeyboardButton
 from telegram import InlineKeyboardMarkup
 from telegram import ReplyKeyboardMarkup
@@ -18,7 +20,7 @@ from telegram.ext import CallbackQueryHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import RegexHandler
 
-from qr_decode import decode_qr_from_photo
+from image_tools import qr_detect_and_decode
 from tax_tools import get_receipt
 
 
@@ -46,8 +48,8 @@ photos_dir = 'receipts_photos'
 
 def start(update, context):
     logger.debug('new start')
-    chat_id=update.effective_chat.id
-    text='отправь сюда фото чека'
+    chat_id = update.effective_chat.id
+    text = 'отправь сюда фото чека'
     context.bot.send_message(
         chat_id=chat_id,
         text=text, 
@@ -56,14 +58,17 @@ def start(update, context):
 
 
 def photo(update, context):
+    chat_id = update.effective_chat.id
     user = update.message.from_user
     photo_file = update.message.photo[-1].get_file()
     filename = 'tax_image.jpeg'
     photo_file.download(filename)
     logger.info('Фото от {}: {}'.format(user.first_name, filename))
-    qr_data = decode_qr_from_photo(filename)
+    context.bot.sendChatAction(chat_id, action=ChatAction.TYPING)
+    qr_data = qr_detect_and_decode(filename)
     if qr_data:
         update.message.reply_text('QR data: {}'.format(qr_data))
+        context.bot.sendChatAction(chat_id, action=ChatAction.TYPING)
         receipt_data = get_receipt(qr_data)
         update.message.reply_text(receipt_data)
     else:
@@ -74,7 +79,6 @@ def photo(update, context):
 def main():
     load_dotenv()
     telegram_token = getenv('TELEGRAM_TOKEN')
-
     updater = Updater(
         telegram_token, 
         use_context=True,
