@@ -148,8 +148,7 @@ def get_receipt(qr_data):
             receipt_data = get_receipt_data(receipt_details)
 
             if receipt_data:
-                logger.debug(print_receipt(receipt_data))
-                return print_receipt(receipt_data)
+                return receipt_data 
 
 
 def main():

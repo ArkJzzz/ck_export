@@ -21,7 +21,8 @@ from telegram.ext import ConversationHandler
 from telegram.ext import RegexHandler
 
 from image_tools import qr_detect_and_decode
-from tax_tools import get_receipt
+import tax_tools
+# from tax_tools import get_receipt
 
 
 logging.basicConfig(
@@ -69,8 +70,9 @@ def photo(update, context):
     if qr_data:
         update.message.reply_text('QR data: {}'.format(qr_data))
         context.bot.sendChatAction(chat_id, action=ChatAction.TYPING)
-        receipt_data = get_receipt(qr_data)
-        update.message.reply_text(receipt_data)
+        receipt_data = tax_tools.get_receipt(qr_data)
+        data_to_print = tax_tools.print_receipt(receipt_data)
+        update.message.reply_text(data_to_print)
     else:
         update.message.reply_text('Чек не распознан, '
                                   'попробуй сделать новое фото')
