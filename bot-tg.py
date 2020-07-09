@@ -20,9 +20,9 @@ from telegram.ext import CallbackQueryHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import RegexHandler
 
-from image_tools import qr_detect_and_decode
-import tax_tools
-# from tax_tools import get_receipt
+from image_recognition_tools import qr_detect_and_decode
+import tax_service_helpers
+import receipts_tools
 
 
 logging.basicConfig(
@@ -61,17 +61,20 @@ def start(update, context):
 def photo(update, context):
     chat_id = update.effective_chat.id
     user = update.message.from_user
-    photo_file = update.message.photo[-1].get_file()
     filename = 'tax_image.jpeg'
+
+    photo_file = update.message.photo[-1].get_file()
     photo_file.download(filename)
     logger.info('Фото от {}: {}'.format(user.first_name, filename))
-    context.bot.sendChatAction(chat_id, action=ChatAction.TYPING)
+
     qr_data = qr_detect_and_decode(filename)
     if qr_data:
         update.message.reply_text('QR data: {}'.format(qr_data))
         context.bot.sendChatAction(chat_id, action=ChatAction.TYPING)
-        receipt_data = tax_tools.get_receipt(qr_data)
-        data_to_print = tax_tools.print_receipt(receipt_data)
+
+        receipt_data = tax_service_helpers.get_receipt(qr_data)
+
+        data_to_print = receipts_tools.print_receipt(receipt_data)
         update.message.reply_text(data_to_print)
     else:
         update.message.reply_text('Чек не распознан, '
